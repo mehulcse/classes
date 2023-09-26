@@ -1,11 +1,19 @@
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
+import { useCallback, useMemo, useState } from 'react';
 import { BsArrowLeft, BsFilter, BsSearch } from 'react-icons/bs';
 import { FaPlus } from 'react-icons/fa';
+import {
+  RiAddBoxFill,
+  RiHomeFill,
+  RiMoreFill,
+  RiSparklingFill,
+} from 'react-icons/ri';
 
-import { NewPostNavigation } from '@/components/NewPostNavigation';
 import PostDetails from '@/components/PostDetails';
 import Button from '@/components/button';
+import { CreatePostDrawer } from '@/components/drawers/CreatePostDrawer';
+import { Navigation } from '@/components/navigation';
 import { Classes } from '@/interfaces/Classes';
 
 interface Props {
@@ -14,6 +22,44 @@ interface Props {
 
 const ClassDetails = ({ selectedClass }: Props) => {
   const router = useRouter();
+  const [isCreatePostDrawerShow, setCreatePostDrawerShow] = useState(false);
+
+  const handleCreatePostDrawerShow = useCallback(() => {
+    setCreatePostDrawerShow(true);
+  }, []);
+
+  const handleCreatePostDrawerHide = useCallback(() => {
+    setCreatePostDrawerShow(false);
+  }, []);
+
+  const menuOptions = useMemo(
+    () => [
+      {
+        icon: <RiHomeFill className="text-xl" />,
+        title: 'Posts',
+        id: 'posts',
+      },
+      {
+        icon: <RiSparklingFill className="text-xl" />,
+        title: 'Rewards',
+        id: 'rewards',
+      },
+      {
+        icon: <RiAddBoxFill className="text-xl" />,
+        title: 'Create',
+        id: 'create',
+        onClick: () => {
+          handleCreatePostDrawerShow();
+        },
+      },
+      {
+        icon: <RiMoreFill className="text-xl" />,
+        title: 'More',
+        id: 'more',
+      },
+    ],
+    [handleCreatePostDrawerShow]
+  );
 
   return (
     <div className="bg-background">
@@ -33,7 +79,12 @@ const ClassDetails = ({ selectedClass }: Props) => {
       </header>
       <div className="p-4 md:px-0 container mx-auto">
         <div className="flex space-x-4">
-          <Button variant="contained" color="primary" className="!flex !gap-2">
+          <Button
+            variant="contained"
+            color="primary"
+            className="!flex !gap-2"
+            onClick={() => setCreatePostDrawerShow(true)}
+          >
             <FaPlus className="mr-2 text-white" />
             New Post
           </Button>
@@ -47,7 +98,11 @@ const ClassDetails = ({ selectedClass }: Props) => {
             <PostDetails key={index} index={index} classes={selectedClass} />
           ))}
       </div>
-      <NewPostNavigation />
+      <Navigation menuOptions={menuOptions} />
+      <CreatePostDrawer
+        isCreatePostDrawerShow={isCreatePostDrawerShow}
+        handleCreatePostDrawerHide={handleCreatePostDrawerHide}
+      />
     </div>
   );
 };

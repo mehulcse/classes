@@ -1,9 +1,18 @@
 import { GetServerSideProps } from 'next';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
+import React, { useCallback, useMemo, useState } from 'react';
 import { PiMessengerLogoLight } from 'react-icons/pi';
+import {
+  RiAddBoxFill,
+  RiHomeFill,
+  RiMoreFill,
+  RiSparklingFill,
+} from 'react-icons/ri';
 
 import FormattedDate from '@/components/date';
+import { CreateClassDrawer } from '@/components/drawers/CreateClassDrawer';
+import { JoinClassDrawer } from '@/components/drawers/JoinClassDrawer';
 import Header from '@/components/header';
 import { Navigation } from '@/components/navigation';
 import { Classes } from '@/interfaces/Classes';
@@ -14,6 +23,55 @@ interface Props {
 
 export default function Home({ classes }: Props) {
   const router = useRouter();
+  const [isJoinClassDrawerShow, setJoinClassDrawerShow] = useState(false);
+  const [isCreateClassDrawerShow, setCreateClassDrawerShow] = useState(false);
+  const handleJoinClassDrawerShow = useCallback(() => {
+    setJoinClassDrawerShow(true);
+  }, []);
+
+  const handleJoinClassDrawerHide = useCallback(() => {
+    setJoinClassDrawerShow(false);
+  }, []);
+
+  const handleCreateClassDrawerShow = useCallback(() => {
+    setCreateClassDrawerShow(true);
+  }, []);
+
+  const handleCreateClassDrawerHide = useCallback(() => {
+    setCreateClassDrawerShow(false);
+  }, []);
+
+  const menuOptions = useMemo(
+    () => [
+      {
+        icon: <RiHomeFill className="text-xl" />,
+        title: 'Groups',
+        id: 'groups',
+      },
+      {
+        icon: <RiSparklingFill className="text-xl" />,
+        title: 'Join',
+        onClick: () => {
+          handleJoinClassDrawerShow();
+        },
+        id: 'join',
+      },
+      {
+        icon: <RiAddBoxFill className="text-xl" />,
+        title: 'Create',
+        id: 'create',
+        onClick: () => {
+          handleCreateClassDrawerShow();
+        },
+      },
+      {
+        icon: <RiMoreFill className="text-xl" />,
+        title: 'More',
+        id: 'more',
+      },
+    ],
+    [handleCreateClassDrawerShow, handleJoinClassDrawerShow]
+  );
 
   return (
     <div>
@@ -60,7 +118,15 @@ export default function Home({ classes }: Props) {
           </div>
         </div>
       </div>
-      <Navigation />
+      <Navigation menuOptions={menuOptions} />
+      <JoinClassDrawer
+        isJoinClassDrawerShow={isJoinClassDrawerShow}
+        handleJoinClassDrawerHide={handleJoinClassDrawerHide}
+      />
+      <CreateClassDrawer
+        isCreateClassDrawerShow={isCreateClassDrawerShow}
+        handleCreateClassDrawerHide={handleCreateClassDrawerHide}
+      />
     </div>
   );
 }
