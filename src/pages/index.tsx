@@ -66,8 +66,15 @@ export default function Home({ classes }: Props) {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const res = await fetch('http://localhost:3000/api/classes');
-  const classes = await res.json();
+  let classes = [];
+  try {
+    const resp = await fetch(
+      'https://run.mocky.io/v3/31a43aef-8202-4a6f-9943-68dac42ae8c0'
+    );
+    classes = await resp.json();
+  } catch (error) {
+    console.error(error);
+  }
 
   return {
     props: { classes },

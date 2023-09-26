@@ -9,10 +9,10 @@ import Button from '@/components/button';
 import { Classes } from '@/interfaces/Classes';
 
 interface Props {
-  classes: Classes;
+  selectedClass: Classes;
 }
 
-const ClassDetails = ({ classes }: Props) => {
+const ClassDetails = ({ selectedClass }: Props) => {
   const router = useRouter();
 
   return (
@@ -27,7 +27,7 @@ const ClassDetails = ({ classes }: Props) => {
           >
             <BsArrowLeft size={22} />
           </Button>
-          <h1>{classes?.title}</h1>
+          <h1>{selectedClass?.title}</h1>
           <BsSearch size={22} />
         </div>
       </header>
@@ -44,7 +44,7 @@ const ClassDetails = ({ classes }: Props) => {
         {Array(10)
           .fill('_')
           .map((_, index) => (
-            <PostDetails key={index} index={index} classes={classes} />
+            <PostDetails key={index} index={index} classes={selectedClass} />
           ))}
       </div>
       <NewPostNavigation />
@@ -55,11 +55,18 @@ const ClassDetails = ({ classes }: Props) => {
 export default ClassDetails;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  let selectedClass = {};
   const { slug } = context.query;
-  const res = await fetch(`http://localhost:3000/api/${slug}`);
-  const classes = await res.json();
-
+  try {
+    const resp = await fetch(
+      'https://run.mocky.io/v3/31a43aef-8202-4a6f-9943-68dac42ae8c0'
+    );
+    const jsonData = await resp.json();
+    selectedClass = jsonData.find((detail: any) => detail.slug === slug);
+  } catch (error) {
+    console.error(error);
+  }
   return {
-    props: { classes },
+    props: { selectedClass },
   };
 };
